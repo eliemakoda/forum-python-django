@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,35 +24,35 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav side-nav" >
           <li class="nav-item">
-            <a class="nav-link" style="margin-left: 20px;" href="../index.html">Home
+            <a class="nav-link" style="margin-left: 20px;" href="{% url 'AdminIndex' %}">Home
               <span class="sr-only">(current)</span>
-            </a>
+            </a> 
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admins.html" style="margin-left: 20px;">Admins</a>
+            <a class="nav-link" href="{% url 'AdminsList' %}" style="margin-left: 20px;">Admins</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../categories-admins/show-categories.html" style="margin-left: 20px;">Categories</a>
+            <a class="nav-link" href="{% url 'AdminCategory' %}"  style="margin-left: 20px;">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../topics-admins/show-topics.html" style="margin-left: 20px;">Topics</a>
+            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Topics</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../replies-admins/show-replies.html" style="margin-left: 20px;">Replies</a>
+            <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
           </li>
         </ul>
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            <a class="nav-link" href="../index.html">Home
+            <a class="nav-link" href="{% url 'AdminIndex' %}">Home
               <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               username
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Logout</a>
+              <a class="dropdown-item" >Logout</a>
               
           </li>
                           

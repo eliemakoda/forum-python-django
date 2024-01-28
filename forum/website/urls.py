@@ -12,10 +12,11 @@ urlpatterns = [
     path('AdminIndex/',views.AdminIndex, name="AdminIndex"),
     path('loginAdmin/',views.loginAdmin, name="loginAdmin"),
     path('ADDAdmin/',views.ADDAdmin, name="ADDAdmin"),
-    path('AdminsList/',views.ADDAdmin, name="AdminsList"),
+    path('AdminsList/',views.AdminsList, name="AdminsList"),
     path('AdminCreateCategory/',views.AdminCreateCategory, name="AdminCreateCategory"),
     path('AdminCategoryUpdate/<int:id>',views.AdminCategoryUpdate, name="AdminCategoryUpdate"),
     path('AdminReplies/',views.AdminReplies, name="AdminReplies"),
     path('postedTopic/',views.postedTopic, name="postedTopic"),
+    path('AdminCategory/',views.AdminCategory, name="AdminCategory"),
 
 ]

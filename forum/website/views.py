@@ -152,7 +152,7 @@ def ADDAdmin(request):
 
 def AdminsList(request):
     adm= Admins.objects.all()
-    return render(request, "admin-panel/admins/admins-admins.html", context={"admin":adm})
+    return render(request, "admin-panel/admins/admins.html", context={"admin":adm})
 
 #Gestion des routes Des Categories 
 # forum\templates\admin-panel\categories-admins
@@ -160,7 +160,8 @@ def AdminCreateCategory(request):
     return render(request, "admin-panel/categories-admins/create-category.html")
 
 def AdminCategory(request):
-    return render(request, "admin-panel/categories-admins/show-categories.html")
+    cat= Category.objects.all()
+    return render(request, "admin-panel/categories-admins/show-categories.html" , context={"category":cat})
 
 def AdminCategoryUpdate(request, id):
     return render(request, "admin-panel/categories-admins/update-category.html")
