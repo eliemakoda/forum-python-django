@@ -12,8 +12,11 @@ def index(request):
     totcat= Category.objects.all().count()
     totpos= PostMessage.objects.all().count()
     totuser= Users.objects.all().count()
+    id_user = request.session.get('id')
+    user= Users.objects.get(pk=id_user)
     # categories = Category.objects.annotate(nombre_occurences=Count(Category.added_by))
     categories= Category.objects.all()
+
     id= Users.objects.get(email=request.session.get("email"))
     return render(request,"index.html", context={"postmessage": PostMessage.objects.all(), "totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id})
 
@@ -78,7 +81,8 @@ def addtopic(request):
         category = Category.objects.get(pk=category_id)
         new_post = PostMessage(title=title, message=question, category=category, user=user)
         new_post.save()
-        return HttpResponse('Le post a été créé avec succès')
+        
+        return redirect('accueil')
    else:
       category= Category.objects.all()
       return render(request, "create.html" , context={"category":category})
@@ -113,18 +117,19 @@ def loginAdmin(request):
             # Vérifier si l'utilisateur existe dans la base de données
             try:
                 user = Admins.objects.get(email=email, password=password)
-            except Users.DoesNotExist:
-                messages.error(request, 'Email ou mot de passe incorrect')
-                return redirect('login')
-            request.session['Admin_pseudo'] = user.pseudo
-            request.session['Admin_id'] = user.pk
-            request.session['Admin_email'] = user.email
-            request.session['Admin_role'] = user.role
-            request.session['Admin_avatar'] = user.avatar.url if user.avatar else None
-            request.session['Admin_activated'] = user.activated
-        # request.session['birthdate'] = user.birthdate
-            request.session['Admin_description'] = user.description
-            return redirect('AdminIndex')
+                request.session['Admin_pseudo'] = user.pseudo
+                request.session['Admin_id'] = user.pk
+                request.session['Admin_email'] = user.email
+                request.session['Admin_role'] = user.role
+                request.session['Admin_avatar'] = user.avatar.url if user.avatar else None
+                request.session['Admin_activated'] = user.activated
+                # request.session['birthdate'] = user.birthdate
+                request.session['Admin_description'] = user.description
+                return redirect('AdminIndex')
+            except Admins.DoesNotExist:
+                # messages.error(request, 'Email ou mot de passe incorrect')
+                return redirect('loginAdmin')
+
      return render(request, "admin-panel/admins/login-admins.html")
 
 
@@ -142,9 +147,9 @@ def ADDAdmin(request):
         with open(img_path, 'wb') as img_file:
                 for chunk in avatar.chunks():
                     img_file.write(chunk)
-        new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate="12/12/01", description=description, avatar=avatar)
+        new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate="2022-12-31", description=description, avatar=avatar)
         new_user.save()
-        new_admin= Admins(pseudo=pseudo, email=email, password=password, role=role, birthdate="12/12/01", description=description, avatar=avatar, activated=activated)
+        new_admin= Admins(pseudo=pseudo, email=email, password=password, role=role,  description=description, avatar=avatar, activated=activated)
         new_admin.save()
         return redirect("loginAdmin")
      return render(request, "admin-panel/admins/create-admins.html")
@@ -157,7 +162,15 @@ def AdminsList(request):
 #Gestion des routes Des Categories 
 # forum\templates\admin-panel\categories-admins
 def AdminCreateCategory(request):
-    return render(request, "admin-panel/categories-admins/create-category.html")
+        if request.method == 'POST':
+             name = request.POST.get('name') 
+             description=request.POST.get('description')
+             added= request.session.get('Admin_id')
+             adm= Admins.objects.get(pk=added)
+             cat = Category(title=name, description=description, added_by=adm)
+             cat.save()
+             return redirect('AdminCategory')
+        return render(request, "admin-panel/categories-admins/create-category.html")
 
 def AdminCategory(request):
     cat= Category.objects.all()

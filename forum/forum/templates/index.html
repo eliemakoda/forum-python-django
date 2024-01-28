@@ -24,7 +24,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'accueil'  %}">Forum</a>
+          <a class="navbar-brand" href="{% url 'accueil'  %}">Forum  {{id.pseudo}}</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -61,7 +61,7 @@
 								<div class="topic-content pull-right">
 									<h3><a href="{%url 'topic' id=post.pk %}"> {{post.title}}</a></h3>
 									<div class="topic-info">
-										<a href="{% url 'categorie' id=post.category.pk %}"> {{post.category.title}}</a>>> <a href="{% url 'profile' %}"> {{post.user.pseudo}}</a> >> Posté le: {{post.posted_date}}
+										<a href="{% url 'categorie' id=post.category.pk %}"> {{post.category.title}}</a>>> <a href="{% url 'profile' id=post.user.pk %}"> {{post.user.pseudo}}</a> >> Posté le: {{post.posted_date}}
 										<span class="color badge pull-right"></span>
 									</div>
 								</div>

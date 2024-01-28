@@ -67,14 +67,18 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title mb-5 d-inline">Ajouter une Categorie</h5>
-          <form method="POST" action="" enctype="multipart/form-data">
+          <form method="POST" action="{% url 'AdminCreateCategory' %}" enctype="multipart/form-data">
+            {% csrf_token %}
                 <!-- Email input -->
                 <div class="form-outline mb-4 mt-4">
                   <input type="text" name="name" id="form2Example1" class="form-control" placeholder="Nom de la Categorie" />
                  
                 </div>
 
-      
+                <div class="form-outline mb-4 mt-4">
+                  <input type="text" name="description" id="form2Example1" class="form-control" placeholder="description de la Categorie" />
+                 
+                </div>
                 <!-- Submit button -->
                 <button type="submit" name="submit" class="btn btn-primary  mb-4 text-center">Ajouter la catgorie</button>
 

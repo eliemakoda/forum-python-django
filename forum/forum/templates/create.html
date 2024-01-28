@@ -47,14 +47,15 @@
 						<div class="clearfix"></div>
 						<hr>
 						{% if category %}
-						<form role="form" method="POST">
+						<form method="POST" action="{% url 'addtopic' %}" enctype="multipart/form-data">
+							{% csrf_token %}
 							<div class="form-group">
 								<label>TItre du post </label>
 								<input type="text" class="form-control" name="title" placeholder="Entez le titre du POST">
 							</div>
 							<div class="form-group">
 								<label>Categorie</label>
-								<select class="form-control">
+								<select class="form-control" name="category">
 									{% for cat in category %}
 									<option value={{ cat.pk }}>{{cat.title}}</option>
 									{% endfor %}
