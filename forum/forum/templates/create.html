@@ -46,6 +46,7 @@
 						<h4 class="pull-right">A Simple Forum</h4>
 						<div class="clearfix"></div>
 						<hr>
+						{% if category %}
 						<form role="form">
 							<div class="form-group">
 								<label>Topic Title</label>
@@ -54,11 +55,9 @@
 							<div class="form-group">
 								<label>Category</label>
 								<select class="form-control">
-									<option>Design</option>
-									<option>Development</option>
-									<option>Business & Marketing</option>
-									<option>Search Engines</option>
-									<option>Cloud & Hosting</option>
+									{% for cat in category %}
+									<option value={{ cat.pk }}>{{cat.title}}</option>
+									{% endfor %}
 							</select>
 							</div>
 								<div class="form-group">
@@ -68,6 +67,7 @@
 								</div>
 							<button type="submit" class="color btn btn-default">Submit</button>
 						</form>
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -75,17 +75,20 @@
 				<div id="sidebar">
 			
 					
+					
 					<div class="block">
-					<h3>Categories</h3>
-					<div class="list-group">
-						<a href="#" class="list-group-item active">All Topics <span class="color badge pull-right">14</span></a> 
-						<a href="#" class="list-group-item">Design<span class="color badge pull-right">4</span></a>
-						<a href="#" class="list-group-item">Development<span class="color badge pull-right">9</span></a>
-						<a href="#" class="list-group-item">Business & Marketing <span class="color badge pull-right">12</span></a>
-						<a href="#" class="list-group-item">Search Engines<span class="color badge pull-right">7</span></a>
-						<a href="#" class="list-group-item">Cloud & Hosting <span class="color badge pull-right">3</span></a>
-					</div>
-				</div>	
+						<h3>Categories 
+						</h3>
+						<div class="list-group block ">
+							<a href="#" class="list-group-item active">Tous les Sujets  <span class="badge pull-right">{{totpos}}</span></a> 
+							{% if category %}
+							{% for cat in category %}	
+							{% comment %} suppression de {{cat.nombre_occurences}} dans le span {% endcomment %}
+							<a href="{% url 'categorie' id=cat.pk %}" class="list-group-item">{{ cat.title }}<span class="color badge pull-right"></span></a>
+							{% endfor %}
+							{% endif %}
+						</div>
+						</div>
 				</div>
 			</div>
 		</div>

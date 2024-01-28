@@ -68,7 +68,8 @@ def profile(request,id):
 
 
 def addtopic(request):
-    return render(request, "create.html")
+    category= Category.objects.all()
+    return render(request, "create.html" , context={"category":category})
 
 
 def categorie(request,id):
