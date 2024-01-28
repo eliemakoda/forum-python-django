@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import PostMessage, Category, Users, Reply
+from .models import PostMessage, Category, Users, Reply, Admins
 from django.db.models import Count
 from django.conf import settings
 import os
@@ -50,6 +50,7 @@ def login (request):
             messages.error(request, 'Email ou mot de passe incorrect')
             return redirect('login')
         request.session['pseudo'] = user.pseudo
+        request.session['id'] = user.pk
         request.session['email'] = user.email
         request.session['role'] = user.role
         request.session['avatar'] = user.avatar.url if user.avatar else None
@@ -68,8 +69,19 @@ def profile(request,id):
 
 
 def addtopic(request):
-    category= Category.objects.all()
-    return render(request, "create.html" , context={"category":category})
+   if request.method == 'POST':
+        title = request.POST.get('title')
+        category_id = request.POST.get('category')
+        question = request.POST.get('question')  
+        id_user = request.session.get('id')
+        user = Users.objects.get(pk=id_user)
+        category = Category.objects.get(pk=category_id)
+        new_post = PostMessage(title=title, message=question, category=category, user=user)
+        new_post.save()
+        return HttpResponse('Le post a été créé avec succès')
+   else:
+      category= Category.objects.all()
+      return render(request, "create.html" , context={"category":category})
 
 
 def categorie(request,id):
@@ -79,9 +91,86 @@ def topicDetail(request,id):
     try:
         post= PostMessage.objects.get(pk=id)    
         us= Users.objects.get(pk=post.user.pk)
-        reply= Reply.objects.filter(user=us)
+        reply= Reply.objects.filter(post=post)
         categories= Category.objects.all()
     except PostMessage.DoesNotExist:
         return render(request, 'topic.html', context={'postmesg':""})
-    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categorie})
+    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories})
  
+
+
+
+
+ #Gestion des routes des admins 
+def AdminIndex(request):
+    return render(request, "admin-panel/index.html")
+
+def loginAdmin(request):
+     if request.method == 'POST':
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+
+            # Vérifier si l'utilisateur existe dans la base de données
+            try:
+                user = Admins.objects.get(email=email, password=password)
+            except Users.DoesNotExist:
+                messages.error(request, 'Email ou mot de passe incorrect')
+                return redirect('login')
+            request.session['Admin_pseudo'] = user.pseudo
+            request.session['Admin_id'] = user.pk
+            request.session['Admin_email'] = user.email
+            request.session['Admin_role'] = user.role
+            request.session['Admin_avatar'] = user.avatar.url if user.avatar else None
+            request.session['Admin_activated'] = user.activated
+        # request.session['birthdate'] = user.birthdate
+            request.session['Admin_description'] = user.description
+            return redirect('AdminIndex')
+     return render(request, "admin-panel/admins/login-admins.html")
+
+
+def ADDAdmin(request):
+ 
+     if request.method == 'POST':
+        email = request.POST.get('email')
+        pseudo = request.POST.get('pseudo')
+        password = request.POST.get('password')
+        avatar =  request.FILES.get('avatar') 
+        description = request.POST.get('description') 
+        role="Admin"
+        activated=True
+        img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
+        with open(img_path, 'wb') as img_file:
+                for chunk in avatar.chunks():
+                    img_file.write(chunk)
+        new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate="12/12/01", description=description, avatar=avatar)
+        new_user.save()
+        new_admin= Admins(pseudo=pseudo, email=email, password=password, role=role, birthdate="12/12/01", description=description, avatar=avatar, activated=activated)
+        new_admin.save()
+        return redirect("loginAdmin")
+     return render(request, "admin-panel/admins/create-admins.html")
+
+
+def AdminsList(request):
+    adm= Admins.objects.all()
+    return render(request, "admin-panel/admins/admins-admins.html", context={"admin":adm})
+
+#Gestion des routes Des Categories 
+# forum\templates\admin-panel\categories-admins
+def AdminCreateCategory(request):
+    return render(request, "admin-panel/categories-admins/create-category.html")
+
+def AdminCategory(request):
+    return render(request, "admin-panel/categories-admins/show-categories.html")
+
+def AdminCategoryUpdate(request, id):
+    return render(request, "admin-panel/categories-admins/update-category.html")
+
+#for replies
+
+def AdminReplies(request):
+    rep= Reply.objects.all()
+    return render(request,"admin-panel/replies-admins/show-replies.html", context={"reply":rep})
+#for posted topic
+def postedTopic(request):
+    posts= PostMessage.objects.all()
+    return render(request,"admin-panel/topics-admins/show-topics.html" , context={"posts":posts})
