@@ -89,7 +89,17 @@ def addtopic(request):
 
 
 def categorie(request,id):
-    return render(request, "catgorie.html")
+    categorie= Category.objects.get(pk=id)
+    posts= PostMessage.objects.filter(category=categorie)
+
+    totcat= Category.objects.all().count()
+    totpos= PostMessage.objects.all().count()
+    totuser= Users.objects.all().count()
+    id_user = request.session.get('id')
+    user= Users.objects.get(pk=id_user)
+    # categories = Category.objects.annotate(nombre_occurences=Count(Category.added_by))
+    categories= Category.objects.all()
+    return render(request, "catgorie.html", context={"posts":posts,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id})
 
 def topicDetail(request,id):
     try:
