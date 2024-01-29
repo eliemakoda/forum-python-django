@@ -18,5 +18,5 @@ urlpatterns = [
     path('AdminReplies/',views.AdminReplies, name="AdminReplies"),
     path('postedTopic/',views.postedTopic, name="postedTopic"),
     path('AdminCategory/',views.AdminCategory, name="AdminCategory"),
-
+    path('AddReply/<int:id>',views.AddReply, name="AddReply"),
 ]

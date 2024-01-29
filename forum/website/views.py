@@ -68,7 +68,12 @@ def login (request):
 
 def profile(request,id):
     ut= Users.objects.get(pk=id)
-    return render(request, 'profile.html', context={"user":ut})
+    totcat= Category.objects.all().count()
+    totpos= PostMessage.objects.all().count()
+    totuser= Users.objects.all().count()
+    categories= Category.objects.all()
+
+    return render(request, 'profile.html', context={"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories})
 
 
 def addtopic(request):
@@ -107,10 +112,26 @@ def topicDetail(request,id):
         us= Users.objects.get(pk=post.user.pk)
         reply= Reply.objects.filter(post=post)
         categories= Category.objects.all()
+        # taille=len(dict(categorie))
     except PostMessage.DoesNotExist:
         return render(request, 'topic.html', context={'postmesg':""})
-    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories})
- 
+    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id})
+
+#  ce script gère l'ajout des reponses dans le forum
+def AddReply(request,id):
+     if request.method == "POST":
+         reponse= request.POST.get("reply")
+         user= Users.objects.get(pk=request.session.get('id'))
+         posts= PostMessage.objects.get(pk=id)
+         rep= Reply(description=reponse,user=user,post=posts)
+         rep.save()
+         try:
+            post= PostMessage.objects.get(pk=id)    
+            reply= Reply.objects.filter(post=post)
+            categories= Category.objects.all()
+         except PostMessage.DoesNotExist:
+            return render(request, 'topic.html', context={'postmesg':""})
+         return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id})
 
 
 

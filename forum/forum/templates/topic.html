@@ -11,6 +11,11 @@
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet"/>
     <!-- Custom styles for this template -->
     <link href="{% static 'css/custom.css' %}" rel="stylesheet"/.container>
+	<style>
+		img{
+			border-radius:65px;
+		}
+	</style>
   </head>
 
   <body>
@@ -51,7 +56,7 @@
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left" src="{% static 'img/gravatar.png' %} " />
+									<img class="avatar pull-left" src="{{ postmesg.user.avatar.url }}" />
 									<ul>
 										<li><strong> {{ postmesg.user.pseudo }}</strong></li>
 										<li>43 Posts</li>
@@ -74,9 +79,9 @@
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left" src="img/gravatar.png" />
+									<img class="avatar pull-left "  src="{{ rep.user.avatar.url }}" />
 									<ul>
-										<li><strong>{{reply.user.pseudo}}</strong></li>
+										<li><strong>{{rep.user.pseudo}}</strong></li>
 										<li>43 Posts</li>
 										<li><a href="{% url 'profile' id=rep.user.pk %}" >Profile</a>
 									</ul>
@@ -84,7 +89,7 @@
 							</div>
 							<div class="col-md-10">
 								<div class="topic-content pull-right">
-									<p>{{reply.description}}</p>
+									<p>{{rep.description|safe}}</p>
 								</div>
 							</div>
 						</div>
@@ -93,7 +98,7 @@
 					{% endif %}
 				</ul>
 				<h3>Repondre à la préocupation</h3>
-				<form role="form">	{% csrf_token %} 			
+				<form role="form" enctype="multipart/form-data" method="post" action="{% url 'AddReply' id=id %}">	{% csrf_token %} 			
   					<div class="form-group">
 						<textarea id="reply" rows="10" cols="80" class="form-control" name="reply"></textarea>
 						<script>
@@ -112,10 +117,11 @@
 					<div class="block">
 					<h3>Categories</h3>
 					<div class="list-group">
-						<a href="#" class="list-group-item active">All Topics <span class="badge pull-right">14</span></a> 
+						<a href="#" class="list-group-item active">Tous les sujets <span class="badge pull-right"></span></a> 
 						{% if categories %}
 						{% for cat in categories %}
-						<a href="" class="list-group-item">{{cat.title}}<span class="badge pull-right">4</span></a>
+						{% comment %}  {% endcomment %}
+						<a href="" class="list-group-item">{{cat.title}}<span class="badge pull-right"> {% comment %}nombre de post ici  {% endcomment %}</span></a>
 						{% endfor %}
 						{% endif %}
 					</div>
