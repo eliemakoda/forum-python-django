@@ -103,6 +103,7 @@
 					{% endif %}
 				</ul>
 				{% if auth %}
+				{% if postmesg.closes== False %}
 				<h3>Repondre à la préocupation</h3>
 				<form role="form" enctype="multipart/form-data" method="post" action="{% url 'AddReply' id=postmesg.pk %}">	{% csrf_token %} 			
   					<div class="form-group">
@@ -113,6 +114,7 @@
   					</div>
  					 <button type="submit" class="color btn btn-default">Submit</button>
 				</form>
+				{% endif %}
 				{% endif %}
 					</div>
 				</div>

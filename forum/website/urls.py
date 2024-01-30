@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.urls import path
 from website import views
 urlpatterns = [
-    path('',views.login, name="login"),
+    path('',views.index, name="accueil"),
+    path('login/',views.login, name="login"),
     path('create/',views.createAccount, name="create"),
-    path('accueil/',views.index, name="accueil"),
     path('profile/<int:id>',views.profile, name="profile"),
     path('addtopic/',views.addtopic, name="addtopic"),
     path('categorie/<int:id>',views.categorie, name="categorie"),
@@ -23,5 +23,6 @@ urlpatterns = [
     path('SupprimerCategorie/<int:id>',views.SupprimerCategorie, name="SupprimerCategorie"),
     path('MAJCategorie/<int:id>',views.MAJCategorie, name="MAJCategorie"),
     path('FermerSujet/<int:id>',views.FermerSujet, name="FermerSujet"),
+    path('logoutAdmin/',views.logoutAdmin, name="logoutAdmin"),
 
 ]

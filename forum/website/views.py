@@ -7,6 +7,27 @@ import os
 import json 
 from datetime import date
 from django.contrib import messages
+from django.core.mail import send_mail,EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.views.generic import FormView, ListView
+
+
+
+class EmailView(FormView,ListView):
+   def sendmail(self, email, name):
+        my_subject = "Email du ForumItEcole"
+        my_recepient = [email]
+        html_message = render_to_string("email.html", context={"name": name})
+        plain_message = strip_tags(html_message)
+        message = EmailMultiAlternatives(
+            subject=my_subject,
+            body=plain_message,
+            from_email="eliemakodakowo@gmail.com",
+            to=my_recepient
+        )
+        message.attach_alternative(html_message, "text/html")
+        message.send()
 # Create your views here.
 def index(request):
     totcat= Category.objects.all().count()
@@ -36,6 +57,8 @@ def createAccount(request):
             birthdate = request.POST.get('bithday')
             description = request.POST.get('about')
             avatar = request.FILES.get('avatar')  
+            mailler= EmailView()
+            mailler.sendmail(email=email,name=pseudo) #envoi du mail 
             new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate=birthdate, description=description, avatar=avatar)
             new_user.save()
             img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
@@ -188,8 +211,12 @@ def AddReply(request,id):
 
 
  #Gestion des routes des admins 
+     
+
 def AdminIndex(request):
-    return render(request, "admin-panel/index.html")
+    users= Users.objects.all()
+    emailAd= request.session.get("Admin_pseudo")
+    return render(request, "admin-panel/index.html" ,context={"users":users,"pseudo":emailAd})
 
 def loginAdmin(request):
      if request.method == 'POST':
@@ -216,7 +243,7 @@ def loginAdmin(request):
 
 
 def ADDAdmin(request):
- 
+     emailAd= request.session.get("Admin_pseudo")
      if request.method == 'POST':
         email = request.POST.get('email')
         pseudo = request.POST.get('pseudo')
@@ -234,16 +261,18 @@ def ADDAdmin(request):
         new_admin= Admins(pseudo=pseudo, email=email, password=password, role=role,  description=description, avatar=avatar, activated=activated)
         new_admin.save()
         return redirect("loginAdmin")
-     return render(request, "admin-panel/admins/create-admins.html")
+     return render(request, "admin-panel/admins/create-admins.html", context={"pseudo":emailAd})
 
 
 def AdminsList(request):
+    emailAd= request.session.get("Admin_pseudo")
     adm= Admins.objects.all()
-    return render(request, "admin-panel/admins/admins.html", context={"admin":adm})
+    return render(request, "admin-panel/admins/admins.html", context={"admin":adm,"pseudo":emailAd})
 
 #Gestion des routes Des Categories 
 # forum\templates\admin-panel\categories-admins
 def AdminCreateCategory(request):
+        emailAd= request.session.get("Admin_pseudo")
         if request.method == 'POST':
              name = request.POST.get('name') 
              description=request.POST.get('description')
@@ -252,20 +281,23 @@ def AdminCreateCategory(request):
              cat = Category(title=name, description=description, added_by=adm)
              cat.save()
              return redirect('AdminCategory')
-        return render(request, "admin-panel/categories-admins/create-category.html")
+        return render(request, "admin-panel/categories-admins/create-category.html",context={"pseudo":emailAd})
 
 def AdminCategory(request):
+    emailAd= request.session.get("Admin_pseudo")
     cat= Category.objects.all()
-    return render(request, "admin-panel/categories-admins/show-categories.html" , context={"category":cat})
+    return render(request, "admin-panel/categories-admins/show-categories.html" , context={"category":cat,"pseudo":emailAd})
 
 def AdminCategoryUpdate(request, id):
-    return render(request, "admin-panel/categories-admins/update-category.html")
+    emailAd= request.session.get("Admin_pseudo")
+    return render(request, "admin-panel/categories-admins/update-category.html" , context={"pseudo":emailAd})
 
 #for replies
 
 def AdminReplies(request):
+    emailAd= request.session.get("Admin_pseudo")
     rep= Reply.objects.all()
-    return render(request,"admin-panel/replies-admins/show-replies.html", context={"reply":rep})
+    return render(request,"admin-panel/replies-admins/show-replies.html", context={"reply":rep,"pseudo":emailAd})
 #for posted topic
 def postedTopic(request):
     posts= PostMessage.objects.all()
@@ -283,6 +315,7 @@ def SupprimerCategorie(request,id):
     return redirect("AdminCategory")
 
 def MAJCategorie(request, id):
+    emailAd= request.session.get("Admin_pseudo")
     cat = Category.objects.get(pk=id)
     if request.method == 'POST':
         name = request.POST.get('name') 
@@ -296,12 +329,21 @@ def MAJCategorie(request, id):
         cat.added_by = adm
         cat.save()  # Enregistrer les modifications dans la base de données
         return redirect("AdminCategory")
-    return render(request, "admin-panel/categories-admins/update-category.html", context={"cat": cat})
+    return render(request, "admin-panel/categories-admins/update-category.html", context={"cat": cat,"pseudo":emailAd})
 
 
 #fonction pour fermer un sujet
 def FermerSujet(request, id):
+    emailAd= request.session.get("Admin_pseudo")
     message= PostMessage.objects.get(pk=id)
     message.closes=True
     message.save()
     return redirect("postedTopic")
+
+def logoutAdmin(request):
+    emailAd= request.session.get("Admin_pseudo")
+    keys_to_delete = ['Admin_pseudo', 'Admin_id', 'Admin_email', 'Admin_role', 'Admin_avatar', 'Admin_activated', 'Admin_description']
+    for key in keys_to_delete:
+        if key in request.session:
+            del request.session[key]
+    return redirect("loginAdmin")

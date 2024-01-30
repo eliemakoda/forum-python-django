@@ -15,7 +15,6 @@
 <div id="wrapper">
     <nav class="navbar header-top fixed-top navbar-expand-lg  navbar-dark bg-dark">
       <div class="container">
-      <a class="navbar-brand" href="#">LOGO</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,7 +23,7 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav side-nav" >
           <li class="nav-item">
-            <a class="nav-link" style="margin-left: 20px;" href="{% url 'AdminIndex' %}">Home
+            <a class="nav-link" style="margin-left: 20px;" href="{% url 'AdminIndex' %}">Accueil
               <span class="sr-only">(current)</span>
             </a> 
           </li>
@@ -37,22 +36,20 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Publications</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
-          </li>
+        
         </ul>
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'AdminIndex' %}">Home
+            <a class="nav-link" href="{% url 'AdminIndex' %}">Accueil
               <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              username
+              {{ pseudo }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" >Logout</a>
+              <a class="dropdown-item" href="{% url 'logoutAdmin' %}">Deconnexion</a>
               
           </li>
                           
