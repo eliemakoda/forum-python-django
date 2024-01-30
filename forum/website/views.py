@@ -12,13 +12,19 @@ def index(request):
     totcat= Category.objects.all().count()
     totpos= PostMessage.objects.all().count()
     totuser= Users.objects.all().count()
-    id_user = request.session.get('id')
-    user= Users.objects.get(pk=id_user)
+    # id_user = request.session.get('id')
+    # user= Users.objects.get(pk=id_user)
     # categories = Category.objects.annotate(nombre_occurences=Count(Category.added_by))
     categories= Category.objects.all()
+    auth= True
+    if not request.session.get('id'):
+        auth=False
 
-    id= Users.objects.get(email=request.session.get("email"))
-    return render(request,"index.html", context={"postmessage": PostMessage.objects.all(), "totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id})
+    try:
+         id= Users.objects.get(email=request.session.get("email"))
+    except Users.DoesNotExist:
+        id={"pseudo":"visiteur@visiteur.com"}
+    return render(request,"index.html", context={"postmessage": PostMessage.objects.all(), "totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth})
 
 def createAccount(request):
        categories= Category.objects.all()
@@ -63,6 +69,16 @@ def login (request):
         return redirect('accueil')
     return render(request, "login.html",context={"categories":categories} )
 
+def logoutUser(request):
+    del request.session['pseudo']
+    del request.session['id']
+    del request.session['email']
+    del request.session['role']
+    del request.session['avatar']
+    del request.session['activated']
+    # del request.session['birthdate']
+    del request.session['description']
+    return redirect("login")
 
 
 
@@ -72,8 +88,13 @@ def profile(request,id):
     totpos= PostMessage.objects.all().count()
     totuser= Users.objects.all().count()
     categories= Category.objects.all()
+    auth= True
+    if not request.session.get('id'):
+        auth=False
+    
+    id= Users.objects.get(email=request.session.get("email"))
 
-    return render(request, 'profile.html', context={"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories})
+    return render(request, 'profile.html', context={"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"auth":auth,"id":id})
 
 
 def addtopic(request):
@@ -86,11 +107,15 @@ def addtopic(request):
         category = Category.objects.get(pk=category_id)
         new_post = PostMessage(title=title, message=question, category=category, user=user)
         new_post.save()
-        
         return redirect('accueil')
    else:
       category= Category.objects.all()
-      return render(request, "create.html" , context={"category":category})
+      auth= True
+      if not request.session.get('id'):
+         auth=False
+      id= Users.objects.get(email=request.session.get("email"))
+
+      return render(request, "create.html" , context={"category":category,"auth":auth,"id":id})
 
 
 def categorie(request,id):
@@ -100,11 +125,18 @@ def categorie(request,id):
     totcat= Category.objects.all().count()
     totpos= PostMessage.objects.all().count()
     totuser= Users.objects.all().count()
-    id_user = request.session.get('id')
-    user= Users.objects.get(pk=id_user)
+    # id_user = request.session.get('id')
+    # user= Users.objects.get(pk=id_user)
     # categories = Category.objects.annotate(nombre_occurences=Count(Category.added_by))
     categories= Category.objects.all()
-    return render(request, "catgorie.html", context={"posts":posts,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id})
+    auth= True
+    if not request.session.get('id'):
+         auth=False
+    try:
+         id= Users.objects.get(email=request.session.get("email"))
+    except Users.DoesNotExist:
+        id={"pseudo":"visiteur@visiteur.com"}
+    return render(request, "catgorie.html", context={"posts":posts,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth})
 
 def topicDetail(request,id):
     try:
@@ -114,8 +146,19 @@ def topicDetail(request,id):
         categories= Category.objects.all()
         # taille=len(dict(categorie))
     except PostMessage.DoesNotExist:
-        return render(request, 'topic.html', context={'postmesg':""})
-    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id})
+        auth= True #verifier si l'utililsateur est authentifier
+        if not request.session.get('id'):
+            auth=False
+        return render(request, 'topic.html', context={'postmesg':"","auth":auth})
+    # id= Users.objects.get(email=request.session.get("email"))
+    try:
+         auth= True #verifier si l'utililsateur est authentifier
+         if not request.session.get('id'):
+            auth=False
+         id= Users.objects.get(email=request.session.get("email"))
+    except Users.DoesNotExist:
+        id={"pseudo":"visiteur@visiteur.com"}
+    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth})
 
 #  ce script gère l'ajout des reponses dans le forum
 def AddReply(request,id):
@@ -125,13 +168,21 @@ def AddReply(request,id):
          posts= PostMessage.objects.get(pk=id)
          rep= Reply(description=reponse,user=user,post=posts)
          rep.save()
+         auth= True
+         if not request.session.get('id'):
+                auth=False
          try:
             post= PostMessage.objects.get(pk=id)    
             reply= Reply.objects.filter(post=post)
             categories= Category.objects.all()
          except PostMessage.DoesNotExist:
-            return render(request, 'topic.html', context={'postmesg':""})
-         return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id})
+            auth= True
+            if not request.session.get('id'):
+                auth=False
+            id= Users.objects.get(email=request.session.get("email"))
+            return render(request, 'topic.html', context={'postmesg':"", "auth":auth,"id":id})
+         id= Users.objects.get(email=request.session.get("email"))
+         return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth})
 
 
 
@@ -218,4 +269,39 @@ def AdminReplies(request):
 #for posted topic
 def postedTopic(request):
     posts= PostMessage.objects.all()
-    return render(request,"admin-panel/topics-admins/show-topics.html" , context={"posts":posts})
+    pseudo= request.session.get("Admin_pseudo")
+    return render(request,"admin-panel/topics-admins/show-topics.html" , context={"posts":posts,"pseudo":pseudo})
+
+
+
+
+#operations côté Admin (suppression , mise à jour)
+
+#les catgories
+def SupprimerCategorie(request,id):
+    cat = Category.objects.get(pk=id).delete()
+    return redirect("AdminCategory")
+
+def MAJCategorie(request, id):
+    cat = Category.objects.get(pk=id)
+    if request.method == 'POST':
+        name = request.POST.get('name') 
+        description = request.POST.get('description')
+        added = request.session.get('Admin_id')
+        adm = Admins.objects.get(pk=added)
+
+        # Mettre à jour les champs de l'objet cat avec les nouvelles valeurs
+        cat.title = name
+        cat.description = description
+        cat.added_by = adm
+        cat.save()  # Enregistrer les modifications dans la base de données
+        return redirect("AdminCategory")
+    return render(request, "admin-panel/categories-admins/update-category.html", context={"cat": cat})
+
+
+#fonction pour fermer un sujet
+def FermerSujet(request, id):
+    message= PostMessage.objects.get(pk=id)
+    message.closes=True
+    message.save()
+    return redirect("postedTopic")

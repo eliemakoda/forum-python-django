@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome To Forum</title>
+    <title>Bienvenue Au Forum</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet"/>
@@ -15,28 +15,37 @@
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'accueil'  %}">Forum</a>
-        </div>
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="{% url 'accueil'  %}">Home</a></li>
-            <li><a href="{% url 'create'  %}">Register</a></li>
-            <li><a href="{% url 'addtopic' %}">Create Topic</a></li>
-			{% comment %} <li><a href="{% url 'profile' %}">Profile</a></li> {% endcomment %}
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
+		  <div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			  <span class="sr-only">Toggle navigation</span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="{% url 'accueil'  %}">Bienvenue  {{id.pseudo}}</a>
+		  </div>
+		  <div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navbar-right ">
+			  {% if auth %}
+				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
+				<li><a href="{% url 'addtopic' %}">Poser une Question</a></li>
+				<li><a href="{% url 'profile' id.pk %}">Mon Profil</a></li>
+        <li><a href="{% url 'logoutUser'  %}">Deconnexion</a></li> 
 
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+			  {% else %}
+				<li><a href="{% url 'login'  %}">Se Connecter</a></li>
+				<li><a href="{% url 'create'  %}">Créer un compte</a></li>
+
+				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
+			  {% endif %}
+			</ul>
+		  </div><!--/.nav-collapse -->
+		</div>
+	  </div>
+	  
+	  
     {% if user%}
     <div class="container">
       <div class="row">

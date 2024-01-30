@@ -35,7 +35,7 @@
             <a class="nav-link" href="{% url 'AdminCategory' %}"  style="margin-left: 20px;">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Topics</a>
+            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Publications</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
@@ -76,6 +76,8 @@
                     <th scope="col">Nom</th>
                     <th scope="col">AJouter Par</th>
                     <th scope="col">Supprimer</th>
+                    <th scope="col">Mettre à jour</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -86,7 +88,9 @@
                     <th scope="row">{{cat.pk}}</th>
                     <td>{{ cat.title }}</td>
                     <td>{{ cat.added_by.pseudo }}</td>
-                    <td><a href="delete-category.html" class="btn btn-danger  text-center ">Delete Categories</a></td>
+                    <td><a href="{% url 'SupprimerCategorie' id=cat.pk %}" class="btn btn-danger  text-center ">Supprimer</a></td>
+                    <td><a href="{% url 'MAJCategorie' id=cat.pk %}" class="btn btn-info  text-center ">Mise à jour</a></td>
+
                   </tr>
                   {% endfor %}
                   {% endif %}

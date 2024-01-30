@@ -19,4 +19,9 @@ urlpatterns = [
     path('postedTopic/',views.postedTopic, name="postedTopic"),
     path('AdminCategory/',views.AdminCategory, name="AdminCategory"),
     path('AddReply/<int:id>',views.AddReply, name="AddReply"),
+    path('logoutUser/',views.logoutUser, name="logoutUser"),
+    path('SupprimerCategorie/<int:id>',views.SupprimerCategorie, name="SupprimerCategorie"),
+    path('MAJCategorie/<int:id>',views.MAJCategorie, name="MAJCategorie"),
+    path('FermerSujet/<int:id>',views.FermerSujet, name="FermerSujet"),
+
 ]

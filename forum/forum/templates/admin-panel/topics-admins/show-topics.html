@@ -35,7 +35,7 @@
             <a class="nav-link" href="{% url 'AdminCategory' %}"  style="margin-left: 20px;">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Topics</a>
+            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Publications</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
@@ -49,7 +49,7 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              username
+              {{ pseudo }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" >Logout</a>
@@ -87,7 +87,12 @@
                     <td>{{post.title}}</td>
                     <td> {{post.category.title}}</td>
                     <td>  {{post.user.pseudo}}</td>
-                     <td><a href="delete-posts.html" class="btn btn-danger  text-center ">Supprimer</a></td>
+                    {% if post.closes == False %}
+                     <td><a href="{% url 'FermerSujet' id=post.pk %}" class="btn btn-danger  text-center ">fermer le sujet</a></td>
+                     {% else %}
+                     <td class="text-danger">Ce Sujet a été Fermé</td>
+
+                     {% endif %}
                   </tr>
                   {% endfor %}
                   {% endif %}

@@ -35,7 +35,7 @@
             <a class="nav-link" href="{% url 'AdminCategory' %}"  style="margin-left: 20px;">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Topics</a>
+            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Publications</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
@@ -49,7 +49,7 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              elie makoda
+              username
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" >Logout</a>
@@ -62,89 +62,47 @@
     </div>
     </nav>
     <div class="container-fluid">
-            
-      <div class="row">
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Topics</h5>
-              <!-- <h6 class="card-subtitle mb-2 text-muted">Bootstrap 4.0.0 Snippet by pradeep330</h6> -->
-              <p class="card-text">number of topics: 8</p>
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Categories</h5>
-              
-              <p class="card-text">number of categories: 4</p>
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Admins</h5>
-              
-              <p class="card-text">number of admins: 3</p>
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Replies</h5>
-              
-              <p class="card-text">number of replies: 3</p>
-              
-            </div>
-          </div>
-        </div>
-      </div>
-     <!--  <div class="row">
+
+          <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
+              <h5 class="card-title mb-4 d-inline">Utilisateurs</h5>
               <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table> -->
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">AJouter Par</th>
+                    <th scope="col">Supprimer</th>
+                    <th scope="col">Mettre à jour</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if category %}
+                  
+                  {% for cat in category   %}
+                  <tr>
+                    <th scope="row">{{cat.pk}}</th>
+                    <td>{{ cat.title }}</td>
+                    <td>{{ cat.added_by.pseudo }}</td>
+                    <td><a href="{% url 'SupprimerCategorie' id=cat.pk %}" class="btn btn-danger  text-center ">Supprimer</a></td>
+                    <td><a href="{% url 'MAJCategorie' id=cat.pk %}" class="btn btn-info  text-center ">Mise à jour</a></td>
+
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                
+                </tbody>
+              </table> 
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+
+
   </div>
 <script type="text/javascript">
 
