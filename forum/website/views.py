@@ -14,8 +14,7 @@ from django.views.generic import FormView, ListView
 
 
 
-class EmailView(FormView,ListView):
-   def sendmail(self, email, name):
+def sendmails( email, name):
         my_subject = "Email du ForumItEcole"
         my_recepient = [email]
         html_message = render_to_string("email.html", context={"name": name})
@@ -23,7 +22,7 @@ class EmailView(FormView,ListView):
         message = EmailMultiAlternatives(
             subject=my_subject,
             body=plain_message,
-            from_email="eliemakodakowo@gmail.com",
+            from_email=settings.EMAIL_HOST_USER,
             to=my_recepient
         )
         message.attach_alternative(html_message, "text/html")
@@ -57,8 +56,7 @@ def createAccount(request):
             birthdate = request.POST.get('bithday')
             description = request.POST.get('about')
             avatar = request.FILES.get('avatar')  
-            mailler= EmailView()
-            mailler.sendmail(email=email,name=pseudo) #envoi du mail 
+            # sendmails(email=email,name=pseudo) #envoi du mail 
             new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate=birthdate, description=description, avatar=avatar)
             new_user.save()
             img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
