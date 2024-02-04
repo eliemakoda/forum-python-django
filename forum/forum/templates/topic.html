@@ -31,20 +31,19 @@
 			  {% if auth %}
 				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
 				<li><a href="{% url 'addtopic' %}">Poser une Question</a></li>
-				<li><a href="{% url 'profile' id.pk %}">Mon Profil</a></li>
+				<li><a href="{% url 'personalProfile' me %}">Mon Profil</a></li>
 				<li><a href="{% url 'logoutUser'  %}">Deconnexion</a></li> 
 
 			  {% else %}
 				<li><a href="{% url 'login'  %}">Se Connecter</a></li>
 				<li><a href="{% url 'create'  %}">Créer un compte</a></li>
-
+				<li><a href="{% url 'loginAdmin'  %}">Connexion Admin </a></li>
 				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
 			  {% endif %}
 			</ul>
 		  </div><!--/.nav-collapse -->
 		</div>
 	  </div>
-	  
 	  
     <div class="container">
 		<div class="row">
@@ -61,17 +60,23 @@
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left" src="{{ postmesg.user.avatar.url }}" />
+									<img class="avatar pull-left" src="{{ postmesg.user.avatar.url }}"  width="185" />
 									<ul>
-										<li><strong> {{ postmesg.user.pseudo }}</strong></li>
-										<li>43 Posts</li>
+										<li><strong> {{ postmesg.user.pseudo }}</strong>										</li>
+									</li>
+										{% comment %} <li>43 Posts</li> {% endcomment %}
 										{% comment %} <li><a href="profile.php">Profile</a> {% endcomment %}
 									</ul>
 								</div>
+
 							</div>
 							<div class="col-md-10">
 								<div class="topic-content pull-right">
 									<p>{{postmesg.message}}</p>
+									{% if postmesg.avatar %}
+									<p>
+										<img src="{{ postmesg.avatar.url }}" width="355" />
+										<p>{% endif %}
 								</div>
 							</div>
 						</div>
@@ -80,14 +85,14 @@
 
 					{% if reply %}
 					{% for rep in reply %}
-					<li class="topic topic">
+						<li class="topic topic">
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left "  src="{{ rep.user.avatar.url }}" />
+									<img class="avatar pull-left "  src="{{ rep.user.avatar.url }}" height="85" width="185" />
 									<ul>
 										<li><strong>{{rep.user.pseudo}}</strong></li>
-										<li>43 Posts</li>
+										{% comment %} <li>43 Posts</li> {% endcomment %}
 										<li><a href="{% url 'profile' id=rep.user.pk %}" >Profile</a>
 									</ul>
 								</div>
@@ -103,7 +108,7 @@
 					{% endif %}
 				</ul>
 				{% if auth %}
-				{% if postmesg.closes== False %}
+				{% if postmesg.closes == False %}
 				<h3>Repondre à la préocupation</h3>
 				<form role="form" enctype="multipart/form-data" method="post" action="{% url 'AddReply' id=postmesg.pk %}">	{% csrf_token %} 			
   					<div class="form-group">

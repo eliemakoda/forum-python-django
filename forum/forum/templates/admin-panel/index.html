@@ -94,6 +94,8 @@
                     <td>{{us.pseudo}}</td>
                     <td>{{ us.email}}</td>
                     <td>{{us.description}}</td>
+                    <td><a href="{% url "deleteUser" id=us.pk  %}" class="btn btn-danger  text-center" style="color:white;">Supprimer</a></td>
+
                   </tr>
                   {% endfor %}
                   {% endif %}

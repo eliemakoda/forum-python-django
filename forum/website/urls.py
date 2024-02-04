@@ -24,5 +24,9 @@ urlpatterns = [
     path('MAJCategorie/<int:id>',views.MAJCategorie, name="MAJCategorie"),
     path('FermerSujet/<int:id>',views.FermerSujet, name="FermerSujet"),
     path('logoutAdmin/',views.logoutAdmin, name="logoutAdmin"),
+    path('personalProfile/<int:id>',views.personalProfile, name="personalProfile"),
+    path('deletepost/<int:id>',views.deletepost, name="deletepost"),
+    path('editPost/<int:id>',views.editPost, name="editPost"),
+    path('deleteUser/<int:id>',views.deleteUser, name="deleteUser"),
 
 ]

@@ -31,22 +31,20 @@
 			  {% if auth %}
 				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
 				<li><a href="{% url 'addtopic' %}">Poser une Question</a></li>
-				<li><a href="{% url 'profile' id.pk %}">Mon Profil</a></li> 
+				<li><a href="{% url 'personalProfile' me %}">Mon Profil</a></li>
 				<li><a href="{% url 'logoutUser'  %}">Deconnexion</a></li> 
-				<li><a href="{% url 'loginAdmin'  %}">Admin</a></li> 
 
 			  {% else %}
 				<li><a href="{% url 'login'  %}">Se Connecter</a></li>
 				<li><a href="{% url 'create'  %}">Créer un compte</a></li>
-				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
-				<li><a href="{% url 'loginAdmin'  %}">Admin</a></li> 
+				<li><a href="{% url 'loginAdmin'  %}">Connexion Admin </a></li>
 
+				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
 			  {% endif %}
 			</ul>
 		  </div><!--/.nav-collapse -->
 		</div>
 	  </div>
-	  
 	  
 
     <div class="container">

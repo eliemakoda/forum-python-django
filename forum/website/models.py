@@ -32,7 +32,8 @@ class PostMessage(models.Model):
     closes = models.BooleanField(default=False)  # Par défaut, le message n'est pas clos
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Correction du nom du champ Category en minuscules
     user= models.ForeignKey(Users, on_delete= models.CASCADE)
- 
+    avatar = models.ImageField(null=True, blank=True, upload_to='img/')  # Ajout d'un champ pour l'avatar
+
 
 class Reply(models.Model):
     description= models.TextField(max_length=1000)

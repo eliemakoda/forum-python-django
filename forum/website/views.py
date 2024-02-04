@@ -11,13 +11,13 @@ from django.core.mail import send_mail,EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.views.generic import FormView, ListView
+from django.core.mail import EmailMessage
 
 
-
-def sendmails( email, name):
+def sendmails( email, name,password):
         my_subject = "Email du ForumItEcole"
         my_recepient = [email]
-        html_message = render_to_string("email.html", context={"name": name})
+        html_message = render_to_string("email.html", context={"name": name,"password":password})
         plain_message = strip_tags(html_message)
         message = EmailMultiAlternatives(
             subject=my_subject,
@@ -26,7 +26,8 @@ def sendmails( email, name):
             to=my_recepient
         )
         message.attach_alternative(html_message, "text/html")
-        message.send()
+        message.send(fail_silently=False)
+
 # Create your views here.
 def index(request):
     totcat= Category.objects.all().count()
@@ -39,12 +40,12 @@ def index(request):
     auth= True
     if not request.session.get('id'):
         auth=False
-
+    me= request.session.get('id')
     try:
          id= Users.objects.get(email=request.session.get("email"))
     except Users.DoesNotExist:
         id={"pseudo":"visiteur@visiteur.com"}
-    return render(request,"index.html", context={"postmessage": PostMessage.objects.all(), "totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth})
+    return render(request,"index.html", context={"postmessage": PostMessage.objects.all(), "totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth,"me":me})
 
 def createAccount(request):
        categories= Category.objects.all()
@@ -56,7 +57,7 @@ def createAccount(request):
             birthdate = request.POST.get('bithday')
             description = request.POST.get('about')
             avatar = request.FILES.get('avatar')  
-            # sendmails(email=email,name=pseudo) #envoi du mail 
+            sendmails(email=email,name=pseudo, password=password) #envoi du mail 
             new_user = Users(pseudo=pseudo, email=email, password=password, role=role, birthdate=birthdate, description=description, avatar=avatar)
             new_user.save()
             img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
@@ -65,7 +66,8 @@ def createAccount(request):
                     img_file.write(chunk)
             return redirect('login')
        else:
-            return render(request, "register.html",context={"categories":categories})
+            me= request.session.get('id')
+            return render(request, "register.html",context={"categories":categories,"me":me})
 
 def login (request):
     categories= Category.objects.all()
@@ -88,7 +90,8 @@ def login (request):
         # request.session['birthdate'] = user.birthdate
         request.session['description'] = user.description
         return redirect('accueil')
-    return render(request, "login.html",context={"categories":categories} )
+    me= request.session.get('id')
+    return render(request, "login.html",context={"categories":categories,"me":me} )
 
 def logoutUser(request):
     del request.session['pseudo']
@@ -112,10 +115,12 @@ def profile(request,id):
     auth= True
     if not request.session.get('id'):
         auth=False
-    
-    id= Users.objects.get(email=request.session.get("email"))
-
-    return render(request, 'profile.html', context={"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"auth":auth,"id":id})
+    try:
+        id= Users.objects.get(email=request.session.get("email"))
+    except:
+        pass
+    me= request.session.get('id')
+    return render(request, 'profile.html', context={"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"auth":auth,"id":id,"me":me})
 
 
 def addtopic(request):
@@ -126,7 +131,12 @@ def addtopic(request):
         id_user = request.session.get('id')
         user = Users.objects.get(pk=id_user)
         category = Category.objects.get(pk=category_id)
-        new_post = PostMessage(title=title, message=question, category=category, user=user)
+        avatar = request.FILES.get('avatar')  
+        img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
+        with open(img_path, 'wb') as img_file:
+            for chunk in avatar.chunks():
+                img_file.write(chunk)
+        new_post = PostMessage(title=title, message=question, category=category, user=user, avatar=avatar)
         new_post.save()
         return redirect('accueil')
    else:
@@ -134,9 +144,11 @@ def addtopic(request):
       auth= True
       if not request.session.get('id'):
          auth=False
+      me= request.session.get('id')
+
       id= Users.objects.get(email=request.session.get("email"))
 
-      return render(request, "create.html" , context={"category":category,"auth":auth,"id":id})
+      return render(request, "create.html" , context={"category":category,"auth":auth,"id":id,"me":me})
 
 
 def categorie(request,id):
@@ -157,7 +169,8 @@ def categorie(request,id):
          id= Users.objects.get(email=request.session.get("email"))
     except Users.DoesNotExist:
         id={"pseudo":"visiteur@visiteur.com"}
-    return render(request, "catgorie.html", context={"posts":posts,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth})
+    me= request.session.get('id')
+    return render(request, "catgorie.html", context={"posts":posts,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"id":id,"auth":auth,"me":me})
 
 def topicDetail(request,id):
     try:
@@ -170,16 +183,20 @@ def topicDetail(request,id):
         auth= True #verifier si l'utililsateur est authentifier
         if not request.session.get('id'):
             auth=False
-        return render(request, 'topic.html', context={'postmesg':"","auth":auth})
+        me= request.session.get('id')
+
+        return render(request, 'topic.html', context={'postmesg':"","auth":auth,"me":me})
     # id= Users.objects.get(email=request.session.get("email"))
     try:
          auth= True #verifier si l'utililsateur est authentifier
          if not request.session.get('id'):
             auth=False
+         me= request.session.get('id')
+
          id= Users.objects.get(email=request.session.get("email"))
     except Users.DoesNotExist:
         id={"pseudo":"visiteur@visiteur.com"}
-    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth})
+    return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth,"me":me})
 
 #  ce script gère l'ajout des reponses dans le forum
 def AddReply(request,id):
@@ -190,6 +207,7 @@ def AddReply(request,id):
          rep= Reply(description=reponse,user=user,post=posts)
          rep.save()
          auth= True
+         me= request.session.get('id')
          if not request.session.get('id'):
                 auth=False
          try:
@@ -200,10 +218,12 @@ def AddReply(request,id):
             auth= True
             if not request.session.get('id'):
                 auth=False
+            me= request.session.get('id')
+
             id= Users.objects.get(email=request.session.get("email"))
-            return render(request, 'topic.html', context={'postmesg':"", "auth":auth,"id":id})
+            return render(request, 'topic.html', context={'postmesg':"", "auth":auth,"id":id,"me":me})
          id= Users.objects.get(email=request.session.get("email"))
-         return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth})
+         return render(request, 'topic.html', context={'postmesg':post, "reply": reply, "categories": categories, "id":id, "auth":auth,"me":me})
 
 
 
@@ -250,6 +270,7 @@ def ADDAdmin(request):
         description = request.POST.get('description') 
         role="Admin"
         activated=True
+        sendmails(email=email,name=pseudo, password=password) #envoi du mail 
         img_path = os.path.join(settings.MEDIA_ROOT,avatar.name)
         with open(img_path, 'wb') as img_file:
                 for chunk in avatar.chunks():
@@ -338,6 +359,8 @@ def FermerSujet(request, id):
     message.save()
     return redirect("postedTopic")
 
+
+
 def logoutAdmin(request):
     emailAd= request.session.get("Admin_pseudo")
     keys_to_delete = ['Admin_pseudo', 'Admin_id', 'Admin_email', 'Admin_role', 'Admin_avatar', 'Admin_activated', 'Admin_description']
@@ -345,3 +368,69 @@ def logoutAdmin(request):
         if key in request.session:
             del request.session[key]
     return redirect("loginAdmin")
+
+
+
+def personalProfile(request,id):
+    ut= Users.objects.get(pk=id)
+    totcat= Category.objects.all().count()
+    totuser= Users.objects.all().count()
+    categories= Category.objects.all()
+    auth= True
+    if not request.session.get('id'):
+        auth=False
+    
+    id= Users.objects.get(email=request.session.get("email"))
+    post=PostMessage.objects.filter(user=id)
+    totpos= PostMessage.objects.filter(user=id).count()
+    totrep=Reply.objects.filter(user=id).count()
+    me= request.session.get('id')
+    return render(request, 'myprofile.html', context={"postmessage":post,"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"auth":auth,"id":id, "totrep":totrep,"me":me})
+
+
+def deletepost(request,id):
+    post= PostMessage.objects.get(pk=id)
+    post.delete()
+    ut= Users.objects.get(pk=request.session.get('id'))
+    totcat= Category.objects.all().count()
+    totuser= Users.objects.all().count()
+    categories= Category.objects.all()
+    auth= True
+    if not request.session.get('id'):
+        auth=False
+    
+    id= Users.objects.get(email=request.session.get("email"))
+    post=PostMessage.objects.filter(user=id)
+    totpos= PostMessage.objects.filter(user=id).count()
+    totrep=Reply.objects.filter(user=id).count()
+    me= request.session.get('id')
+
+    return render(request, 'myprofile.html', context={"postmessage":post,"user":ut,"totcat":totcat, "totpos":totpos,"totuser":totuser ,"categories":categories,"auth":auth,"id":id, "totrep":totrep,"me":me})
+
+
+def editPost(request, id):
+      post= PostMessage.objects.get(pk=id)
+      if request.method == 'POST':
+            title = request.POST.get('title') 
+            cat = request.POST.get('category')
+            cats= Category.objects.get(pk=cat)
+            question = request.POST.get('question')
+            post.title=title
+            post.category=cats
+            post.message=question
+            post.save()
+      category= Category.objects.all()
+      post= PostMessage.objects.get(pk=id)
+      auth= True
+      if not request.session.get('id'):
+         auth=False
+      me= request.session.get('id')
+
+      id= Users.objects.get(email=request.session.get("email"))
+      return render(request, "editpost.html" , context={"category":category,"auth":auth,"id":id, "post":post,"me":me})
+
+
+def deleteUser(request, id):
+    ut= Users.objects.get(pk=id)
+    ut.delete()
+    return redirect("AdminIndex")
