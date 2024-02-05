@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome To Forum</title>
+    <title>Bienvenue Au Forum</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet"/>
@@ -14,28 +14,37 @@
   </head>
 
   <body>
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url 'accueil'  %}">Forum</a>
-        </div>
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="{% url 'accueil'  %}">Home</a></li>
-            <li><a href="{% url 'create'  %}">Register</a></li>
-            <li><a href="{% url 'addtopic' %}">Create Topic</a></li>
-			{% comment %} <li><a href="{% url 'profile' %}">Profile</a></li> {% endcomment %}
 
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
+		  <div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			  <span class="sr-only">Toggle navigation</span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="{% url 'accueil'  %}">Bienvenue  {{id.pseudo}}</a>
+		  </div>
+		  <div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navbar-right ">
+			  {% if auth %}
+				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
+				<li><a href="{% url 'addtopic' %}">Poser une Question</a></li>
+				<li><a href="{% url 'personalProfile' me %}">Mon Profil</a></li>
+				<li><a href="{% url 'logoutUser'  %}">Deconnexion</a></li> 
+
+			  {% else %}
+				<li><a href="{% url 'login'  %}">Se Connecter</a></li>
+				<li><a href="{% url 'create'  %}">Créer un compte</a></li>
+				<li><a href="{% url 'loginAdmin'  %}">Connexion Admin </a></li>
+				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
+			  {% endif %}
+			</ul>
+		  </div><!--/.nav-collapse -->
+		</div>
+	  </div>
+	  
     <div class="container">
 		<div class="row">
 			<div class="col-md-8">
@@ -51,17 +60,23 @@
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left" src="{% static 'img/gravatar.png' %} " />
+									<img class="avatar pull-left" src="{{ postmesg.user.avatar.url }}"  width="185" />
 									<ul>
-										<li><strong> {{ postmesg.user.pseudo }}</strong></li>
-										<li>43 Posts</li>
+										<li><strong> {{ postmesg.user.pseudo }}</strong>										</li>
+									</li>
+										{% comment %} <li>43 Posts</li> {% endcomment %}
 										{% comment %} <li><a href="profile.php">Profile</a> {% endcomment %}
 									</ul>
 								</div>
+
 							</div>
 							<div class="col-md-10">
 								<div class="topic-content pull-right">
 									<p>{{postmesg.message}}</p>
+									{% if postmesg.avatar %}
+									<p>
+										<img src="{{ postmesg.avatar.url }}" width="355" />
+										<p>{% endif %}
 								</div>
 							</div>
 						</div>
@@ -70,21 +85,21 @@
 
 					{% if reply %}
 					{% for rep in reply %}
-					<li class="topic topic">
+						<li class="topic topic">
 						<div class="row">
 							<div class="col-md-2">
 								<div class="user-info">
-									<img class="avatar pull-left" src="img/gravatar.png" />
+									<img class="avatar pull-left "  src="{{ rep.user.avatar.url }}" height="85" width="185" />
 									<ul>
-										<li><strong>{{reply.user.pseudo}}</strong></li>
-										<li>43 Posts</li>
+										<li><strong>{{rep.user.pseudo}}</strong></li>
+										{% comment %} <li>43 Posts</li> {% endcomment %}
 										<li><a href="{% url 'profile' id=rep.user.pk %}" >Profile</a>
 									</ul>
 								</div>
 							</div>
 							<div class="col-md-10">
 								<div class="topic-content pull-right">
-									<p>{{reply.description}}</p>
+									<p>{{rep.description|safe}}</p>
 								</div>
 							</div>
 						</div>
@@ -92,8 +107,10 @@
 					{% endfor %}
 					{% endif %}
 				</ul>
+				{% if auth %}
+				{% if postmesg.closes == False %}
 				<h3>Repondre à la préocupation</h3>
-				<form role="form">	{% csrf_token %} 			
+				<form role="form" enctype="multipart/form-data" method="post" action="{% url 'AddReply' id=postmesg.pk %}">	{% csrf_token %} 			
   					<div class="form-group">
 						<textarea id="reply" rows="10" cols="80" class="form-control" name="reply"></textarea>
 						<script>
@@ -102,6 +119,8 @@
   					</div>
  					 <button type="submit" class="color btn btn-default">Submit</button>
 				</form>
+				{% endif %}
+				{% endif %}
 					</div>
 				</div>
 			</div>
@@ -112,10 +131,11 @@
 					<div class="block">
 					<h3>Categories</h3>
 					<div class="list-group">
-						<a href="#" class="list-group-item active">All Topics <span class="badge pull-right">14</span></a> 
+						<a href="#" class="list-group-item active">Tous les sujets <span class="badge pull-right"></span></a> 
 						{% if categories %}
 						{% for cat in categories %}
-						<a href="" class="list-group-item">{{cat.title}}<span class="badge pull-right">4</span></a>
+						{% comment %}  {% endcomment %}
+						<a href="" class="list-group-item">{{cat.title}}<span class="badge pull-right"> {% comment %}nombre de post ici  {% endcomment %}</span></a>
 						{% endfor %}
 						{% endif %}
 					</div>

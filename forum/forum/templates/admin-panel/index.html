@@ -15,7 +15,6 @@
 <div id="wrapper">
     <nav class="navbar header-top fixed-top navbar-expand-lg  navbar-dark bg-dark">
       <div class="container">
-      <a class="navbar-brand" href="#">LOGO</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,7 +23,7 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav side-nav" >
           <li class="nav-item">
-            <a class="nav-link" style="margin-left: 20px;" href="{% url 'AdminIndex' %}">Home
+            <a class="nav-link" style="margin-left: 20px;" href="{% url 'AdminIndex' %}">Accueil
               <span class="sr-only">(current)</span>
             </a> 
           </li>
@@ -35,24 +34,22 @@
             <a class="nav-link" href="{% url 'AdminCategory' %}"  style="margin-left: 20px;">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Topics</a>
+            <a class="nav-link" href="{% url 'postedTopic' %}"  style="margin-left: 20px;">Publications</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'AdminReplies' %}" style="margin-left: 20px;">Replies</a>
-          </li>
+        
         </ul>
         <ul class="navbar-nav ml-md-auto d-md-flex">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'AdminIndex' %}">Home
+            <a class="nav-link" href="{% url 'AdminIndex' %}">Accueil
               <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link  dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              elie makoda
+              {{ pseudo }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" >Logout</a>
+              <a class="dropdown-item" href="{% url 'logoutAdmin' %}">Deconnexion</a>
               
           </li>
                           
@@ -62,89 +59,56 @@
     </div>
     </nav>
     <div class="container-fluid">
-            
-      <div class="row">
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Topics</h5>
-              <!-- <h6 class="card-subtitle mb-2 text-muted">Bootstrap 4.0.0 Snippet by pradeep330</h6> -->
-              <p class="card-text">number of topics: 8</p>
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Categories</h5>
-              
-              <p class="card-text">number of categories: 4</p>
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Admins</h5>
-              
-              <p class="card-text">number of admins: 3</p>
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Replies</h5>
-              
-              <p class="card-text">number of replies: 3</p>
-              
-            </div>
-          </div>
-        </div>
-      </div>
-     <!--  <div class="row">
+
+          <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
+              <h5 class="card-title mb-4 d-inline">Utilisateurs</h5>
               <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table> -->
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Description</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% comment %} pseudo = models.CharField(max_length=50, unique=True)
+                  email = models.EmailField()
+                  password = models.CharField(max_length=100)  # Utilisation de CharField pour le mot de passe
+                  role = models.CharField(max_length=20, default="User")  # Limiter la longueur du rôle
+                  avatar = models.ImageField( null=True, blank=True, upload_to='img/')  # Ajout d'un champ pour l'avatar
+                  activated = models.BooleanField(default=True)  # Par défaut, l'utilisateur n'est pas activé
+                  birthdate= models.DateField(null=False)
+                  description= models.TextField(null=False, default='JE suis un membre anonyme du forum')
+              
+               {% endcomment %}
+                  {% if users %}
+                  
+                  {% for us in users   %}
+                  <tr>
+                    <th scope="row">{{cat.pk}}</th>
+                    <td>{{us.pseudo}}</td>
+                    <td>{{ us.email}}</td>
+                    <td>{{us.description}}</td>
+                    <td><a href="{% url "deleteUser" id=us.pk  %}" class="btn btn-danger  text-center" style="color:white;">Supprimer</a></td>
+
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                
+                </tbody>
+              </table> 
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+
+
   </div>
 <script type="text/javascript">
 

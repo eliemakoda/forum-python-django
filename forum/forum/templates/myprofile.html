@@ -47,7 +47,6 @@
 	  </div>
 	  
 	  
-	  
     {% if user %}
     <div class="container">
       <div class="row">
@@ -77,15 +76,14 @@
                                               </p>
                                           </div>
 
-                                              <a class="btn btn-success" href="" role="button">number of Topics: 22</a>
-                                              <a class="btn btn-primary" href="" role="button">number of replies: 22</a>
+                                              <a class="btn btn-success" href="" role="button">Nombre de sujets : {{totpos}}</a>
                                           
                                       </div>
                                       
                                   </div>
                                   {% endif %}
                               </li>
-                              
+                              <h1> Vos Posts</h1>
                               
               </ul>
           
@@ -124,7 +122,45 @@
           </div>
         </div>
       </div>
-      </div>
+      
+    <div class="container">
+		<div class="row">
+			<div class="col-md-8">
+						<ul id="topics">
+							{% if postmessage %}
+							{% for post in postmessage %}
+							<li class="topic">
+							<div class="row">
+							<div class="col-md-2">
+								<img class="avatar pull-left img-fluid" src="{{ post.user.avatar.url }}" />
+							</div>
+							<div class="col-md-10">
+								<div class="topic-content pull-right">
+									<h3><a href="{%url 'topic' id=post.pk %}"> {{post.title}}</a></h3>
+									<div class="topic-info">
+										<a href="{% url 'editPost' id=post.pk %}"> modifier</a>>> <a href="{% url 'deletepost' id=post.pk %}">supprimer</a> >> Posté le: {{post.posted_date}}
+										<span class="color badge pull-right"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+					
+				{% endif %}
+					
+						</ul>
+						
+					</div>
+				</div>
+			</div>
+			
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script src="{% static 'js/bootstrap.js' %}"  ''></script>
     </body>

@@ -38,7 +38,6 @@
 				<li><a href="{% url 'login'  %}">Se Connecter</a></li>
 				<li><a href="{% url 'create'  %}">Créer un compte</a></li>
 				<li><a href="{% url 'loginAdmin'  %}">Connexion Admin </a></li>
-				<li><a href="{% url 'loginAdmin'  %}">Connexion Admin </a></li>
 
 				<li class="active nav-item"><a href="{% url 'accueil'  %}">Accueil</a></li>
 			  {% endif %}
@@ -46,26 +45,31 @@
 		  </div><!--/.nav-collapse -->
 		</div>
 	  </div>
-	    
+	   
     <div class="container">
 		<div class="row">
 			<div class="col-md-8">
 				<div class="main-col">
 					<div class="block">
-						<h1 class="pull-left">Creer un sujet </h1>
+						<h1 class="pull-left">Modifier  un sujet </h1>
 						<h4 class="pull-right"> Forum</h4>
 						<div class="clearfix"></div>
 						<hr>
 						{% if category %}
-						<form method="POST" action="{% url 'addtopic' %}" enctype="multipart/form-data">
+						<form method="POST" action="{% url 'editPost' id=post.pk %}" enctype="multipart/form-data">
 							{% csrf_token %}
-							<div class="form-group">
-								<label>TItre du post </label>
-								<input type="text" class="form-control" name="title" placeholder="Entez le titre du POST">
-							</div>
+                            <div class="form-group">
+                                <label>TItre du post</label>
+                                <textarea id="body" rows="10" cols="80" class="form-control" name="title" value={{ post.title }}>
+                                    {{ post.title }}
+                                </textarea>
+                                <script>CKEDITOR.replace('body');</script>
+                            </div>
+							
 							<div class="form-group">
 								<label>Categorie</label>
 								<select class="form-control" name="category">
+                                    <option value={{ post.category.pk }}>{{post.category.title}}</option>
 									{% for cat in category %}
 									<option value={{ cat.pk }}>{{cat.title}}</option>
 									{% endfor %}
@@ -73,14 +77,12 @@
 							</div>
 								<div class="form-group">
 									<label>Message /question /préocupation</label>
-									<textarea id="body" rows="10" cols="80" class="form-control" name="question"></textarea>
+									<textarea id="body" rows="10" cols="80" class="form-control" name="question" value={{ post.message }}>
+                                        {{ post.message }}
+                                    </textarea>
 									<script>CKEDITOR.replace('body');</script>
 								</div>
-								<div class="form-group">
-									<label>Choississez une image descriptive </label>
-								<input type="file" name="avatar" placeholder="ajoutez une image à votre post">
-								<p class="help-block"></p>
-									</div>
+								
 							<button type="submit" class="color btn btn-default">enregistrer</button>
 						</form>
 						{% endif %}
